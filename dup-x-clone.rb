@@ -1,27 +1,46 @@
 # Ruby's `dup` and `clone` methods
 
-# The dup method duplicates an object but does not copy all of the object's contents. For instance, singleton
-# methods are not copied. Let me show what this means.
+# The dup and clone methods returns a shallow copy of an object. Let me show you what this means.
 
-class Person
-  def name
-    "a string that represents a name"
-  end
+# 1) `dup` does not copy singleton methods
+# 2) `dup` does not retain an object being frozen
+# 3) `clone` does otherwise
+
+class Person; end
+original_person = Person.new
+
+# add a singleton method for the original_person
+def original_person.eat
+  "Eating on a singleton method"
+end
+duped_person = original_person.dup
+
+begin
+  duped_person.eat
+rescue
+  puts "Cannot call #eat because you are calling it from a `duped` instance"
 end
 
-p = Person.new.freeze
-dup = p.dup
-puts "Duped array is not frozen" unless dup.frozen?
+# Compared to `dup`, `clone` works very differently. Check this out.
 
-# The clone method on the otherhand, copies the receiving object exactly. Even if the receving object is in a
-# frozen state, the cloned object will also be frozen.
-
-an_array = ["mark", "ian", "david", "joni"].map(&:freeze).freeze
+# Even if the receving object is in a frozen state, the cloned object will also be frozen
+an_array = ["mark", "ian", "david", "joni"].map(&:freeze).freeze # freeze this array and its elements
 cloned_array = an_array.clone
 puts "Cloned array is frozen" if cloned_array.frozen?
 
-# Let's see how are we actually going to apply these methods IRL
+# Another good uses of `clone` method is it also copies the receiving object's singleton methods. Here is
+# an example.
+class Animal; end
+dog = Animal.new
 
+def dog.bark
+  "I am barking using a singleton method"
+end
+
+cloned_dog = dog.clone
+puts cloned_dog.bark
+
+# Let's see how are we actually going to apply these methods IRL
 an_initial_array = ["Australia", "Singapore", "Malaysia", "Taiwan", "Australia"]
 def a_method_that_mutates_array(array_arg)
   array_arg << "Iceland"
