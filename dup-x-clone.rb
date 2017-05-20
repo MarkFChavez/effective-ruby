@@ -56,3 +56,8 @@ def a_method_that_mutates_array(array_arg)
 end
 p a_method_that_mutates_array(an_initial_array)
 p an_initial_array
+
+# Things to Remember
+# 1) Method arguments in Ruby are passed by "reference", not by "value". Exceptions to this rule are Fixnum objects.
+# 2) Duplicate collections passed as arguments before mutating them.
+# 3) "dup" and "clone" methods only create shallow copies.
